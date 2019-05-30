@@ -1,4 +1,7 @@
-all:
+all: builder
+	docker run --rm -it -v $(pwd):/code -w /code opencv-wasm make build
+
+builder:
 	docker build -t opencv-wasm .
 
 build: clean
