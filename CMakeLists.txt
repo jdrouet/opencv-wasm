@@ -20,29 +20,20 @@ file( GLOB opencv_include_modules "/third-party/opencv/modules/*/include" )
 include_directories( ${opencv_include_modules} )
 
 # Our hello world executable
-add_executable( hello source/main.cpp )
+add_executable( hello source/main.cpp source/resizer.cpp )
 
 # Link to opencv.js precompiled libraries
 file( GLOB opencv_js "/third-party/opencv/build_wasm/lib/*.a" )
-target_link_libraries( hello ${opencv_js} )
 
-# Specify linker arguments
-# set_target_properties( hello PROPERTIES LINK_FLAGS "-s DEMANGLE_SUPPORT=1 --preload-file assets --bind" )
+target_link_libraries( hello ${opencv_js} )
 
 set(COMPILE_FLAGS "-Wno-missing-prototypes")
 set_target_properties( hello PROPERTIES COMPILE_FLAGS ${COMPILE_FLAGS})
 
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} --memory-init-file 0")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s TOTAL_MEMORY=134217728")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s FORCE_FILESYSTEM=1")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} --use-preload-plugins")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s MODULARIZE=1")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s SINGLE_FILE=1")
-set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s DEMANGLE_SUPPORT=1")
-# set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s ERROR_ON_UNDEFINED_SYMBOLS=0")
-# set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s EXPORT_NAME=\"'pbn'\"")
-# set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} --bind --post-js ${JS_HELPER} ${COMPILE_FLAGS}")
-# set_target_properties(${the_module} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
+set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s WASM=1")
+set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -std=c++1z -O3 --llvm-lto 1")
+set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -s ASSERTIONS=2")
+set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} --memory-init-file 0 -s TOTAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1")
+set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} --bind")
 
 set_target_properties( hello PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} --bind" )
