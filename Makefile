@@ -11,3 +11,6 @@ build: clean
 
 clean:
 	rm -rf build
+
+serve:
+	python serve.py
